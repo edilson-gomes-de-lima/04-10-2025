@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Show Michael Jackson – Planejamento Profissional</title>
+
+<style>
+:root{
+  --bg:#0b0f14;
+  --card:#121924;
+  --text:#e9eef6;
+  --muted:#a9b4c4;
+  --line:#233042;
+  --accent:#ff2d55;
+  --ok:#38d39f;
+  --radius:18px;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family: system-ui, Arial;
+  background: var(--bg);
+  color:var(--text);
+}
+
+header{
+  padding:18px;
+  border-bottom:1px solid var(--line);
+  background:#0e141d;
+}
+
+h1{margin:0;font-size:18px}
+.sub{color:var(--muted);font-size:13px}
+
+.wrap{max-width:1100px;margin:auto;padding:16px}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.kpi{
+  background:#0f1620;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px;
+}
+
+.kpi .label{color:var(--muted);font-size:12px}
+.kpi .value{font-size:20px;font-weight:bold}
+
+input,button{
+  background:#0f1620;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:8px 10px;
+  color:var(--text);
+}
+
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:12px;
+}
+
+.table th,.table td{
+  border-bottom:1px solid var(--line);
+  padding:8px;
+  font-size:13px;
+}
+
+.table th{
+  background:#00000055;
+}
+
+/* ===== DESTAQUES ===== */
+tr.highlight{
+  background:linear-gradient(90deg,
+    rgba(255,45,85,.30),
+    rgba(255,45,85,.12)
+  );
+}
+
+tr.manual-highlight{
+  background:linear-gradient(90deg,
+    rgba(56,211,159,.30),
+    rgba(56,211,159,.12)
+  );
+}
+
+/* PRINT */
+@media print{
+  header,button{display:none}
+  body{background:#fff;color:#000}
+  .card{background:#fff;border:1px solid #ccc}
+  tr.highlight,tr.manual-highlight{background:#eee!important}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Show Michael Jackson – Planejamento Profissional</h1>
+  <div class="sub">Setlist • Figurino • Luz • Posições • Destaques</div>
+</header>
+
+<div class="wrap">
+
+<div class="card">
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">Tempo total</div>
+      <div class="value" id="totalTime">00:00</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Meta</div>
+      <div class="value">45:00</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Elenco</div>
+      <div class="value">5</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <button onclick="addSong()">+ Música</button>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Música</th>
+        <th>Tempo</th>
+        <th>Figurino</th>
+        <th>Luz</th>
+        <th>Posição</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+</div>
+
+<script>
+const LS="mj_show_full";
+let songs=[
+ {name:"Jam",time:"5:00",out:"Dangerous",light:"Branco + strobo",pos:"V"},
+ {name:"Dangerous",time:"6:00",out:"Dangerous completo",light:"Impacto",pos:"Centro"},
+ {name:"Smooth Criminal (45°)",time:"5:00",out:"Terno",light:"Blackout",pos:"Solo"},
+ {name:"Black or White",time:"4:00",out:"Dangerous",light:"Palco aberto",pos:"Final"}
+];
+
+function mmss(s){
+ let [m,ss]=s.split(":").map(Number);
+ return m*60+ss;
+}
+
+function render(){
+ let tb=document.getElementById("tbody");
+ tb.innerHTML="";
+ let total=0;
+
+ songs.forEach((s,i)=>{
+  total+=mmss(s.time);
+  let tr=document.createElement("tr");
+
+  // 🔴 destaque automático
+  let n=s.name.toLowerCase();
+  if(n.includes("dangerous")||n.includes("smooth")||n.includes("45")){
+    tr.classList.add("highlight");
+  }
+
+  // 🟢 destaque manual
+  tr.ondblclick=()=>tr.classList.toggle("manual-highlight");
+
+  tr.innerHTML=`
+    <td>${i+1}</td>
+    <td><input value="${s.name}" oninput="songs[${i}].name=this.value;render()"></td>
+    <td><input value="${s.time}" oninput="songs[${i}].time=this.value;render()"></td>
+    <td><input value="${s.out}" oninput="songs[${i}].out=this.value"></td>
+    <td><input value="${s.light}" oninput="songs[${i}].light=this.value"></td>
+    <td><input value="${s.pos}" oninput="songs[${i}].pos=this.value"></td>
+    <td><button onclick="del(${i})">X</button></td>
+  `;
+  tb.appendChild(tr);
+ });
+
+ document.getElementById("totalTime").innerText=
+  String(Math.floor(total/60)).padStart(2,"0")+":"+
+  String(total%60).padStart(2,"0");
+
+ localStorage.setItem(LS,JSON.stringify(songs));
+}
+
+function addSong(){
+ songs.push({name:"",time:"4:00",out:"",light:"",pos:""});
+ render();
+}
+
+function del(i){
+ songs.splice(i,1);
+ render();
+}
+
+let saved=localStorage.getItem(LS);
+if(saved) songs=JSON.parse(saved);
+
+render();
+</script>
+<a href="index07.html">Next</a>
+</body>
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Show MJ – Planejamento Profissional</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#121924;
+      --card2:#0f1620;
+      --text:#e9eef6;
+      --muted:#a9b4c4;
+      --line:#233042;
+      --accent:#ff2d55; /* toque Michael */
+      --ok:#38d39f;
+      --warn:#ffcc66;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background-color: black;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(255,45,85,.14), transparent 55%),
+                  radial-gradient(900px 600px at 85% 20%, rgba(56,211,159,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:22px 18px 12px;
+      position:sticky; top:0;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(11,15,20,.92), rgba(11,15,20,.72));
+      border-bottom:1px solid rgba(35,48,66,.7);
+      z-index: 10;
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:0 14px 26px;}
+    .topbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+    }
+    .badge{
+      width:42px; height:42px; border-radius:14px;
+      display:grid; place-items:center;
+      background: linear-gradient(145deg, rgba(255,45,85,.28), rgba(255,45,85,.06));
+      border:1px solid rgba(255,45,85,.35);
+      box-shadow: var(--shadow);
+      font-weight:800;
+    }
+    h1{font-size:18px; margin:0;}
+    .sub{color:var(--muted); font-size:13px; margin-top:2px;}
+    .controls{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    button, select, input{
+      font: inherit;
+      color:var(--text);
+      background: rgba(18,25,36,.75);
+      border:1px solid rgba(35,48,66,.9);
+      border-radius: 12px;
+      padding:10px 12px;
+      outline: none;
+    }
+    button{
+      cursor:pointer;
+      transition: transform .08s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{border-color: rgba(255,45,85,.55)}
+    button:active{transform: scale(.98)}
+    .btn-accent{
+      background: linear-gradient(145deg, rgba(255,45,85,.35), rgba(255,45,85,.12));
+      border-color: rgba(255,45,85,.55);
+    }
+    .btn-ok{
+      background: linear-gradient(145deg, rgba(56,211,159,.26), rgba(56,211,159,.10));
+      border-color: rgba(56,211,159,.45);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+      margin-top:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(18,25,36,.86), rgba(15,22,32,.86));
+      border:1px solid rgba(35,48,66,.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(35,48,66,.7);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card .hd h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.3px;
+    }
+    .card .hd p{margin:4px 0 0; color:var(--muted); font-size:12px}
+    .card .bd{padding:14px}
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 560px){
+      .kpis{grid-template-columns:1fr}
+    }
+    .kpi{
+      background: rgba(18,25,36,.6);
+      border:1px solid rgba(35,48,66,.8);
+      border-radius: 16px;
+      padding:12px;
+    }
+    .kpi .label{color:var(--muted); font-size:12px}
+    .kpi .value{font-size:18px; font-weight:800; margin-top:4px}
+    .kpi .hint{color:var(--muted); font-size:12px; margin-top:2px}
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 120px;
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width:560px){ .row{grid-template-columns:1fr} }
+    .row input[type="text"]{width:100%}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius: 16px;
+      border:1px solid rgba(35,48,66,.85);
+    }
+    .table th, .table td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(35,48,66,.65);
+      vertical-align:top;
+      font-size:13px;
+    }
+    .table th{
+      text-align:left;
+      font-size:12px;
+      color:#fff;
+      background: rgba(0,0,0,.35);
+      position:sticky; top:0;
+    }
+    .table tr:last-child td{border-bottom:none}
+    .cell-actions{
+      display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;
+    }
+    .iconbtn{
+      padding:8px 10px;
+      border-radius: 12px;
+      font-size:12px;
+      background: rgba(18,25,36,.65);
+    }
+    .pill{
+      display:inline-block;
+      font-size:11px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(35,48,66,.85);
+      color:var(--muted);
+      background: rgba(18,25,36,.45);
+    }
+    .pill.accent{
+      color:#ffd0da;
+      border-color: rgba(255,45,85,.55);
+      background: rgba(255,45,85,.12);
+    }
+    .pill.ok{
+      color:#c8fff0;
+      border-color: rgba(56,211,159,.55);
+      background: rgba(56,211,159,.10);
+    }
+    .note{
+      padding:12px;
+      border-radius: 16px;
+      border:1px dashed rgba(255,45,85,.45);
+      background: rgba(255,45,85,.08);
+      color: #ffe7ec;
+      font-size:13px;
+      margin-top:12px;
+    }
+
+    /* PRINT */
+    @media print{
+      header, .no-print{display:none !important}
+      body{background:#fff; color:#111}
+      .card{box-shadow:none; border:1px solid #ddd; background:#fff}
+      .table{border:1px solid #ddd}
+      .table th{background:#f3f3f3; color:#111}
+      .pill{border-color:#bbb; color:#333; background:#f7f7f7}
+      .pill.accent, .pill.ok{background:#f7f7f7; color:#111; border-color:#bbb}
+      .page-break{page-break-before: always;}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge">MJ</div>
+        <div>
+          <h1>Show Michael Jackson – Planejamento Profissional</h1>
+          <div class="sub">Editor completo (Setlist • Figurino • Luz • Posições) — salva automaticamente</div>
+        </div>
+      </div>
+🏀<h1>🪀</h1>
+      <div class="controls no-print">
+        <select id="preset">
+          <option value="45">Preset 45 min (Master)</option>
+          <option value="35">Preset 35 min</option>
+          <option value="60">Preset 60 min</option>
+        </select>
+        <button class="btn-ok" id="applyPreset">Aplicar Preset</button>
+        <button class="btn-accent" id="printBtn">Imprimir / PDF</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="card">
+      <div class="hd">
+        <div>
+          <h2>Setlist + Produção</h2>
+          <p>Edite tudo aqui. O total do show é calculado automaticamente.</p>
+        </div>
+        <div class="pill accent" id="autosave">AutoSave: ON</div>
+      </div>
+      <div class="bd">
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Tempo total</div>
+            <div class="value" id="totalTime">00:00</div>
+            <div class="hint" id="totalHint">Meta: 45:00</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Elenco</div>
+            <div class="value" id="castCount">5</div>
+            <div class="hint">4 dançarinos + artista</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Status</div>
+            <div class="value" id="status">OK</div>
+            <div class="hint">Diferença da meta</div>
+          </div>
+        </div>
+
+        <div class="row no-print">
+          <input id="showName" type="text" placeholder="Nome oficial do show (ex: MJ Tribute – Dangerous Night)" />
+          <input id="leadName" type="text" placeholder="Artista (ex: Edy)" />
+        </div>
+
+        <div class="row no-print">
+          <input id="dancers" type="number" min="0" placeholder="Nº dançarinos (ex: 4)" />
+          <input id="target" type="text" placeholder="Meta (mm:ss) ex: 45:00" />
+        </div>
+
+        <div class="note">
+          <b>Dica:</b> Clique em <span class="pill ok">+ Música</span> para adicionar itens extras (intro, troca, etc.).
+          Tudo é salvo automaticamente. No print, sai o setlist e a página de assinatura do elenco.
+        </div>
+
+        <div style="margin-top:12px" class="no-print">
+          <button class="btn-ok" id="addSong">+ Música</button>
+          <button id="addBreak">+ Transição/Troca</button>
+        </div>
+
+        <div style="margin-top:12px; overflow:auto">
+          <table class="table" id="songsTable">
+            <thead>
+              <tr>
+                <th style="width:36px">#</th>
+                <th style="min-width:170px">Música</th>
+                <th style="width:90px">Tempo</th>
+                <th style="min-width:140px">Figurino</th>
+                <th style="min-width:140px">Luz</th>
+                <th style="min-width:150px">Posição / Formação</th>
+                <th class="no-print" style="width:170px; text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card">
+      <div class="hd">
+        <div>
+          <h2>Assinatura do Elenco</h2>
+          <p>Página extra aparece automaticamente ao imprimir.</p>
+        </div>
+        <div class="pill" id="signatureMode">Modo Assinatura: ON</div>
+      </div>
+      <div class="bd">
+        <p class="muted small" style="margin-top:0">
+          Preencha os nomes do elenco para o print. Você pode deixar em branco e preencher à mão depois.
+        </p>
+
+        <div class="row no-print">
+          <input id="company" type="text" placeholder="Produção / Empresa (opcional)" />
+          <input id="date" type="text" placeholder="Data (ex: 25/12/2025)" />
+        </div>
+
+        <div style="margin-top:12px" id="signList"></div>
+
+        <div class="no-print" style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn-ok" id="syncCast">Sincronizar com Nº dançarinos</button>
+          <button id="addSigner">+ Linha</button>
+        </div>
+
+        <div class="note" style="border-color:rgba(56,211,159,.45); background:rgba(56,211,159,.08); color:#eafff7">
+          <b>Proteção do produtor:</b> a assinatura confirma ciência de horário, figurino, maquiagem e posição em cena.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT-ONLY SIGNATURE PAGE -->
+  <div class="card page-break" id="printSignPage" style="margin-top:14px">
+    <div class="hd">
+      <div>
+        <h2>ASSINATURA DO ELENCO</h2>
+        <p id="printMeta" class="muted">Show • Data • Produção</p>
+      </div>
+      <div class="pill">Documento para arquivo</div>
+    </div>
+    <div class="bd" id="printSignBody"></div>
+  </div>
+</div>
+
+<script>
+  // ---------- Helpers ----------
+  const LS_KEY = "mj_show_planner_v1";
+
+  function mmssToSec(mmss){
+    const s = (mmss || "").trim();
+    if(!s) return 0;
+    const parts = s.split(":").map(x => x.trim());
+    if(parts.length === 1){
+      const n = parseInt(parts[0],10);
+      return Number.isFinite(n) ? n : 0;
+    }
+    const mm = parseInt(parts[0],10);
+    const ss = parseInt(parts[1],10);
+    if(!Number.isFinite(mm) || !Number.isFinite(ss)) return 0;
+    return mm*60 + ss;
+  }
+  function secToMMSS(sec){
+    sec = Math.max(0, Math.round(sec));
+    const mm = Math.floor(sec/60);
+    const ss = sec % 60;
+    return String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+  }
+  function uid(){
+    return Math.random().toString(16).slice(2) + Date.now().toString(16);
+  }
+
+  // ---------- Presets ----------
+  const PRESETS = {
+    45: {
+      target:"45:00",
+      dancers:4,
+      songs:[
+        {name:"Jam", time:"5:00", outfit:"Dangerous base", light:"Branco + strobo", pos:"Abertura em V"},
+        {name:"Motown Medley – The Jackson 5", time:"6:00", outfit:"Dangerous base", light:"Colorida frontal", pos:"Linhas simétricas"},
+        {name:"Shake Your Body (Down To The Ground)", time:"4:30", outfit:"Dangerous base", light:"Quente + movimento", pos:"Centro + laterais"},
+        {name:"Bad", time:"4:30", outfit:"Bad style", light:"Vermelho + contra", pos:"Formação agressiva"},
+        {name:"Beat It", time:"5:00", outfit:"Bad style", light:"Branco + recortes", pos:"Blocos alternados"},
+        {name:"Part 02 (Transição / troca / respiro)", time:"2:00", outfit:"—", light:"Luz ambiente", pos:"Saída rápida"},
+        {name:"Dangerous", time:"6:00", outfit:"Dangerous completo", light:"Dramática + impacto", pos:"Foco artista"},
+        {name:"Smooth Criminal (inclinação 45°)", time:"5:00", outfit:"Clean (terno + chapéu)", light:"Branco frio + blackout", pos:"Solo + apoio lateral"},
+        {name:"Black or White", time:"4:00", outfit:"Dangerous base", light:"Palco aberto", pos:"Final aberto (todos)"},
+      ]
+    },
+    35: {
+      target:"35:00",
+      dancers:4,
+      songs:[
+        {name:"Jam", time:"5:00", outfit:"Dangerous base", light:"Branco + strobo", pos:"Abertura em V"},
+        {name:"Motown Medley – The Jackson 5", time:"5:00", outfit:"Dangerous base", light:"Colorida frontal", pos:"Linhas simétricas"},
+        {name:"Bad", time:"4:30", outfit:"Bad style", light:"Vermelho + contra", pos:"Formação agressiva"},
+        {name:"Beat It", time:"5:00", outfit:"Bad style", light:"Branco + recortes", pos:"Blocos alternados"},
+        {name:"Dangerous", time:"6:00", outfit:"Dangerous completo", light:"Dramática + impacto", pos:"Foco artista"},
+        {name:"Smooth Criminal (inclinação 45°)", time:"5:00", outfit:"Clean (terno + chapéu)", light:"Branco frio + blackout", pos:"Solo + apoio lateral"},
+        {name:"Black or White", time:"4:30", outfit:"Dangerous base", light:"Palco aberto", pos:"Final aberto (todos)"},
+      ]
+    },
+    60: {
+      target:"60:00",
+      dancers:4,
+      songs:[
+        {name:"Jam", time:"5:00", outfit:"Dangerous base", light:"Branco + strobo", pos:"Abertura em V"},
+        {name:"Motown Medley – The Jackson 5", time:"6:00", outfit:"Dangerous base", light:"Colorida frontal", pos:"Linhas simétricas"},
+        {name:"Shake Your Body (Down To The Ground)", time:"4:30", outfit:"Dangerous base", light:"Quente + movimento", pos:"Centro + laterais"},
+        {name:"Bad", time:"4:30", outfit:"Bad style", light:"Vermelho + contra", pos:"Formação agressiva"},
+        {name:"Beat It", time:"5:00", outfit:"Bad style", light:"Branco + recortes", pos:"Blocos alternados"},
+        {name:"Part 02 (Transição / troca / respiro)", time:"2:00", outfit:"—", light:"Luz ambiente", pos:"Saída rápida"},
+        {name:"Dangerous", time:"6:00", outfit:"Dangerous completo", light:"Dramática + impacto", pos:"Foco artista"},
+        {name:"You Are Not Alone", time:"4:30", outfit:"Clean (camisa + calça)", light:"Azul/Branco suave", pos:"Semi-círculo atrás"},
+        {name:"Heal the World", time:"5:30", outfit:"Clean (emocional)", light:"Branco quente", pos:"Final com abertura"},
+        {name:"Smooth Criminal (inclinação 45°)", time:"5:00", outfit:"Clean (terno + chapéu)", light:"Branco frio + blackout", pos:"Solo + apoio lateral"},
+        {name:"Black or White", time:"5:00", outfit:"Dangerous base", light:"Palco aberto", pos:"Final aberto (todos)"},
+      ]
+    }
+  };
+
+  // ---------- State ----------
+  let state = {
+    showName: "SHOW MICHAEL JACKSON",
+    leadName: "Edy",
+    company: "",
+    date: "",
+    dancers: 4,
+    target: "45:00",
+    songs: [],
+    signers: []
+  };
+
+  function load(){
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      try{ state = JSON.parse(raw); }
+      catch(e){ /* ignore */ }
+    }
+    if(!state.songs || !state.songs.length){
+      applyPreset(45, false);
+    }
+    if(!state.signers || !state.signers.length){
+      syncSigners();
+    }
+  }
+
+  function save(){
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    const el = document.getElementById("autosave");
+    el.textContent = "AutoSave: ON";
+    el.classList.add("ok");
+    setTimeout(()=> el.classList.remove("ok"), 250);
+  }
+
+  function applyPreset(mins, doSave=true){
+    const p = PRESETS[mins];
+    state.target = p.target;
+    state.dancers = p.dancers;
+    state.songs = p.songs.map(s => ({ id: uid(), ...s }));
+    syncSigners();
+    if(doSave) save();
+    render();
+  }
+
+  function totalSeconds(){
+    return state.songs.reduce((sum,s)=> sum + mmssToSec(s.time), 0);
+  }
+
+  function computeStatus(){
+    const total = totalSeconds();
+    const tgt = mmssToSec(state.target);
+    const diff = total - tgt;
+    return { total, tgt, diff };
+  }
+
+  // ---------- Render ----------
+  function render(){
+    // inputs
+    document.getElementById("showName").value = state.showName || "";
+    document.getElementById("leadName").value = state.leadName || "";
+    document.getElementById("company").value = state.company || "";
+    document.getElementById("date").value = state.date || "";
+    document.getElementById("dancers").value = state.dancers ?? 4;
+    document.getElementById("target").value = state.target || "45:00";
+
+    // KPI
+    const { total, tgt, diff } = computeStatus();
+    document.getElementById("totalTime").textContent = secToMMSS(total);
+    document.getElementById("totalHint").textContent = "Meta: " + secToMMSS(tgt);
+
+    document.getElementById("castCount").textContent = String((parseInt(state.dancers||0,10) || 0) + 1);
+
+    const status = document.getElementById("status");
+    if(Math.abs(diff) <= 30){
+      status.textContent = "OK";
+    } else if(diff > 30){
+      status.textContent = "+" + secToMMSS(diff);
+    } else {
+      status.textContent = "-" + secToMMSS(Math.abs(diff));
+    }
+
+    // table rows
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+    state.songs.forEach((s, idx)=>{
+      const tr = document.createElement("tr");
+
+      const tdIdx = document.createElement("td");
+      tdIdx.textContent = idx+1;
+      tr.appendChild(tdIdx);
+
+      tr.appendChild(makeInputCell("name", s.id, s.name, "Nome da música"));
+      tr.appendChild(makeInputCell("time", s.id, s.time, "mm:ss"));
+      tr.appendChild(makeInputCell("outfit", s.id, s.outfit, "Figurino"));
+      tr.appendChild(makeInputCell("light", s.id, s.light, "Luz"));
+      tr.appendChild(makeInputCell("pos", s.id, s.pos, "Posição / formação"));
+
+      const tdAct = document.createElement("td");
+      tdAct.className = "cell-actions no-print";
+      tdAct.style.textAlign="right";
+
+      const up = mkBtn("↑", "iconbtn", ()=> moveSong(s.id, -1));
+      const down = mkBtn("↓", "iconbtn", ()=> moveSong(s.id, +1));
+      const del = mkBtn("Excluir", "iconbtn", ()=> deleteSong(s.id));
+      tdAct.append(up, down, del);
+
+      tr.appendChild(tdAct);
+
+      tbody.appendChild(tr);
+    });
+
+    // signers list (editor)
+    const signList = document.getElementById("signList");
+    signList.innerHTML = "";
+    state.signers.forEach((name, i)=>{
+      const row = document.createElement("div");
+      row.style.display="grid";
+      row.style.gridTemplateColumns="1fr 80px";
+      row.style.gap="10px";
+      row.style.marginBottom="10px";
+
+      const inp = document.createElement("input");
+      inp.type="text";
+      inp.placeholder = `Dançarino ${i+1} (nome)`;
+      inp.value = name || "";
+      inp.addEventListener("input", ()=>{
+        state.signers[i] = inp.value;
+        save(); updatePrintSignature();
+      });
+
+      const rm = mkBtn("Remover", "", ()=>{
+        state.signers.splice(i,1);
+        save(); render();
+      });
+
+      row.append(inp, rm);
+      signList.appendChild(row);
+    });
+
+    updatePrintSignature();
+  }
+
+  function makeInputCell(field, id, value, placeholder){
+    const td = document.createElement("td");
+    const inp = document.createElement("input");
+    inp.type="text";
+    inp.value = value ?? "";
+    inp.placeholder = placeholder || "";
+    inp.style.width="100%";
+    inp.style.padding="8px 10px";
+    inp.style.borderRadius="12px";
+    inp.style.background="rgba(18,25,36,.55)";
+    inp.style.border="1px solid rgba(35,48,66,.85)";
+    inp.addEventListener("input", ()=>{
+      const song = state.songs.find(x=>x.id===id);
+      song[field] = inp.value;
+      save();
+      // only recalc on time changes
+      if(field==="time") renderKpisOnly();
+      updatePrintSignature();
+    });
+    td.appendChild(inp);
+    return td;
+  }
+
+  function renderKpisOnly(){
+    const { total, tgt, diff } = computeStatus();
+    document.getElementById("totalTime").textContent = secToMMSS(total);
+    document.getElementById("totalHint").textContent = "Meta: " + secToMMSS(tgt);
+    const status = document.getElementById("status");
+    if(Math.abs(diff) <= 30){
+      status.textContent = "OK";
+    } else if(diff > 30){
+      status.textContent = "+" + secToMMSS(diff);
+    } else {
+      status.textContent = "-" + secToMMSS(Math.abs(diff));
+    }
+  }
+
+  function mkBtn(text, cls, onClick){
+    const b = document.createElement("button");
+    b.textContent = text;
+    if(cls) b.className = cls;
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  // ---------- Actions ----------
+  function addSongRow(isBreak=false){
+    state.songs.push({
+      id: uid(),
+      name: isBreak ? "Transição / troca" : "",
+      time: isBreak ? "1:00" : "4:00",
+      outfit: isBreak ? "—" : "Dangerous base",
+      light: isBreak ? "Luz ambiente" : "Branco + recortes",
+      pos: isBreak ? "Saída / entrada" : "Centro + laterais"
+    });
+    save(); render();
+  }
+
+  function deleteSong(id){
+    state.songs = state.songs.filter(s=>s.id!==id);
+    save(); render();
+  }
+
+  function moveSong(id, dir){
+    const i = state.songs.findIndex(s=>s.id===id);
+    if(i<0) return;
+    const j = i+dir;
+    if(j<0 || j>=state.songs.length) return;
+    const tmp = state.songs[i];
+    state.songs[i] = state.songs[j];
+    state.songs[j] = tmp;
+    save(); render();
+  }
+
+  function syncSigners(){
+    const n = parseInt(state.dancers||0,10) || 0;
+    state.signers = Array.from({length:n}, (_,i)=> state.signers?.[i] || "");
+    save();
+  }
+
+  function updatePrintSignature(){
+    const meta = [];
+    if(state.showName) meta.push(state.showName);
+    if(state.date) meta.push("Data: " + state.date);
+    if(state.company) meta.push("Produção: " + state.company);
+    document.getElementById("printMeta").textContent = meta.join(" • ") || "Show • Data • Produção";
+
+    const body = document.getElementById("printSignBody");
+    body.innerHTML = "";
+
+    const t = document.createElement("table");
+    t.className = "table";
+    const thead = document.createElement("thead");
+    thead.innerHTML = `
+      <tr>
+        <th style="width:60px">#</th>
+        <th>Nome</th>
+        <th style="width:220px">Assinatura</th>
+        <th style="width:120px">Data</th>
+      </tr>`;
+    t.appendChild(thead);
+
+    const tb = document.createElement("tbody");
+    (state.signers || []).forEach((nm, i)=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${escapeHtml(nm || "")}</td>
+        <td></td>
+        <td></td>`;
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+
+    const info = document.createElement("p");
+    info.className = "muted small";
+    info.innerHTML = `
+      Declaro ciência e concordância com: horário de chegada, figurino, maquiagem e posições em cena conforme planejamento do show.
+    `;
+
+    body.appendChild(t);
+    body.appendChild(document.createElement("div")).style.height="10px";
+    body.appendChild(info);
+  }
+
+  function escapeHtml(str){
+    return str.replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  }
+
+  // ---------- Events ----------
+  document.getElementById("applyPreset").addEventListener("click", ()=>{
+    const val = parseInt(document.getElementById("preset").value,10);
+    applyPreset(val, true);
+  });
+
+  document.getElementById("printBtn").addEventListener("click", ()=>{
+    // update once before print
+    updatePrintSignature();
+    window.print();
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", ()=>{
+    localStorage.removeItem(LS_KEY);
+    state = {
+      showName: "SHOW MICHAEL JACKSON",
+      leadName: "Edy",
+      company: "",
+      date: "",
+      dancers: 4,
+      target: "45:00",
+      songs: [],
+      signers: []
+    };
+    applyPreset(45, true);
+  });
+
+  document.getElementById("addSong").addEventListener("click", ()=> addSongRow(false));
+  document.getElementById("addBreak").addEventListener("click", ()=> addSongRow(true));
+
+  document.getElementById("syncCast").addEventListener("click", ()=>{
+    syncSigners();
+    render();
+  });
+
+  document.getElementById("addSigner").addEventListener("click", ()=>{
+    state.signers.push("");
+    save(); render();
+  });
+
+  // input bindings
+  ["showName","leadName","company","date","dancers","target"].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener("input", ()=>{
+      state[id] = el.value;
+      // if dancers changes, update cast count live
+      if(id==="dancers"){
+        const n = parseInt(state.dancers||0,10) || 0;
+        document.getElementById("castCount").textContent = String(n+1);
+      }
+      save();
+      renderKpisOnly();
+      updatePrintSignature();
+    });
+  });
+
+  // ---------- Init ----------
+  load();
+  render();
+</script>
+
+
+<a href="index05.html">Next</a>
+</body>
+</html>

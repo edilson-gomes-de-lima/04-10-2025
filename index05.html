@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>edyStude_Com_Foco — Programa Completo</title>
+  <style>
+    :root{
+      --bg:#0D1B2A;
+      --panel:#12263A;
+      --card:#0F2234;
+      --text:#EAF2FF;
+      --muted:#B8C7E6;
+      --accent:#4DA3FF;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 12px 28px rgba(0,0,0,.35);
+      --radius:18px;
+      --max:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(800px 600px at 20% 0%, rgba(77,163,255,.20), transparent 60%),
+        radial-gradient(900px 700px at 90% 20%, rgba(77,163,255,.10), transparent 55%),
+        var(--bg);
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:rgba(13,27,42,.85);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:var(--max); margin:0 auto; padding:18px 16px}
+    .top{
+      display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .brand{display:flex; gap:12px; align-items:center}
+    .brand img{width:46px; height:46px; object-fit:contain; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,.06)}
+    .brand h1{font-size:18px; margin:0}
+    .brand p{margin:0; color:var(--muted); font-size:12px}
+    .actions{display:flex; gap:10px; flex-wrap:wrap}
+    button, .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      box-shadow:none;
+      transition:.15s transform, .15s background;
+      font-weight:600;
+      font-size:13px;
+    }
+    button:hover{background:rgba(255,255,255,.10)}
+    button:active{transform:translateY(1px)}
+    .btnPrimary{background:rgba(77,163,255,.18); border-color:rgba(77,163,255,.40)}
+    .btnPrimary:hover{background:rgba(77,163,255,.25)}
+    .grid{
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 920px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .card .hd{padding:14px 14px 0 14px}
+    .card .bd{padding:14px}
+    .kpi{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .kpi .box{
+      padding:12px; border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.18)
+    }
+    .kpi .box b{display:block; font-size:16px}
+    .kpi .box span{color:var(--muted); font-size:12px}
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding:10px 14px 14px 14px;
+    }
+    .tab{
+      padding:10px 12px; border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      cursor:pointer; user-select:none;
+      font-weight:700; font-size:13px;
+    }
+    .tab.active{background:rgba(77,163,255,.22); border-color:rgba(77,163,255,.45)}
+    label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    input[type="text"], input[type="number"], textarea, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width: 620px){ .row{grid-template-columns:1fr} }
+
+    .sectionTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-top:2px;
+    }
+    .sectionTitle h2{margin:0; font-size:16px}
+    .hint{color:var(--muted); font-size:12px}
+
+    .imgBox{
+      border:1px dashed rgba(255,255,255,.25);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.15);
+    }
+    .imgBox img{width:100%; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,.04)}
+    .imgBtns{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .list{
+      display:grid; gap:10px;
+      margin-top:10px;
+    }
+    .item{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.16);
+    }
+    .itemHead{display:flex; justify-content:space-between; gap:10px; align-items:center}
+    .itemHead b{font-size:14px}
+    .item small{color:var(--muted)}
+    .item .meta{margin-top:6px; color:var(--muted); font-size:12px}
+    .item .ans{margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,.10)}
+    .pill{
+      display:inline-block;
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(77,163,255,.45);
+      background:rgba(77,163,255,.18);
+      margin-left:8px;
+      color:var(--text);
+    }
+    .hr{height:1px; background:rgba(255,255,255,.10); margin:14px 0}
+
+    /* CERTIFICADO (print-friendly) */
+    .cert{
+      display:none;
+      padding:30px;
+    }
+    .cert .paper{
+      max-width:900px;
+      margin:0 auto;
+      background:#fff;
+      color:#111;
+      border-radius:16px;
+      padding:34px;
+      border:10px solid #0D1B2A;
+    }
+    .cert .paper h1{margin:0 0 10px; text-align:center; color:#0D1B2A}
+    .cert .paper .sub{margin:0 0 18px; text-align:center; color:#333}
+    .cert .paper .line{margin:18px auto; width:80%; border-bottom:2px solid #333}
+    .cert .paper .code{margin-top:18px; text-align:center; color:#0D1B2A; font-weight:800}
+    .cert .paper .logoLine{display:flex; justify-content:center; margin-bottom:14px}
+    .cert .paper img{max-height:70px}
+
+    /* PRINT MODE */
+    @media print{
+      header, .noPrint{display:none !important}
+      body{background:#fff; color:#000}
+      .card{box-shadow:none; border:0}
+      .wrap{max-width:none}
+      .cert{display:block}
+      .cert .paper{border-radius:0}
+    }
+  </style>
+</head>
+<body>
+<header class="noPrint">
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <img id="brandLogo" alt="logo" />
+        <div>
+          <h1 id="brandName">edyStude_Com_Foco</h1>
+          <p>Programa completo — HTML/CSS/JS • Tema azul • Tudo salvo automaticamente</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btnPrimary" id="btnPrint">🖨️ Imprimir / PDF</button>
+        <button id="btnCert">🎓 Certificado</button>
+        <button id="btnExport">⬇️ Exportar JSON</button>
+        <label class="btn" for="importJson" style="display:inline-flex;align-items:center;gap:8px">
+          ⬆️ Importar JSON <input id="importJson" type="file" accept="application/json" hidden>
+        </label>
+        <button id="btnReset">🧹 Reset</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <!-- Painel lateral -->
+    <section class="card noPrint">
+      <div class="hd">
+        <div class="sectionTitle">
+          <h2>Configurações</h2>
+          <span class="hint">Salva no navegador</span>
+        </div>
+      </div>
+      <div class="bd">
+        <label>Nome do curso</label>
+        <input id="courseName" type="text" value="edyStude_Com_Foco" />
+
+        <div class="row">
+          <div>
+            <label>Carga horária (ex.: 2 horas)</label>
+            <input id="courseHours" type="text" value="2 horas" />
+          </div>
+          <div>
+            <label>Data padrão</label>
+            <input id="courseDate" type="text" />
+          </div>
+        </div>
+
+        <label>Subtítulo (capas)</label>
+        <input id="courseSubtitle" type="text" value="Introdução ao Git e GitHub (do zero ao push)" />
+
+        <div class="hr"></div>
+
+        <div class="sectionTitle">
+          <h2>Uploads</h2>
+          <span class="hint">opcional</span>
+        </div>
+
+        <label>Logo (PNG/JPG)</label>
+        <input id="logoUpload" type="file" accept="image/*"/>
+
+        <label>Print Terminal</label>
+        <input id="termUpload" type="file" accept="image/*"/>
+
+        <label>Print GitHub</label>
+        <input id="ghUpload" type="file" accept="image/*"/>
+
+        <div class="hr"></div>
+
+        <div class="kpi">
+          <div class="box">
+            <b id="kpiExercises">0</b>
+            <span>exercícios</span>
+          </div>
+          <div class="box">
+            <b id="kpiModules">4</b>
+            <span>módulos</span>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="sectionTitle">
+          <h2>Adicionar exercício</h2>
+          <span class="hint">aparece em todas as versões</span>
+        </div>
+
+        <label>Título</label>
+        <input id="exTitle" type="text" placeholder="Ex: Fazer push para a branch main" />
+        <label>Enunciado</label>
+        <textarea id="exPrompt" placeholder="Descreva o que o aluno deve fazer..."></textarea>
+        <label>Gabarito (professor)</label>
+        <textarea id="exAnswer" placeholder="Comandos/resposta esperada..."></textarea>
+
+        <button class="btnPrimary" id="btnAddEx">➕ Adicionar</button>
+      </div>
+    </section>
+
+    <!-- Conteúdo -->
+    <section class="card">
+      <div class="tabs noPrint">
+        <div class="tab active" data-tab="iniciante">📘 Iniciante</div>
+        <div class="tab" data-tab="tecnico">📗 Técnico</div>
+        <div class="tab" data-tab="professor">📕 Professor</div>
+        <div class="tab" data-tab="online">🎥 Curso Online</div>
+      </div>
+
+      <div class="bd">
+        <div id="view"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- CERTIFICADO (impressão) -->
+  <section class="cert" id="certView">
+    <div class="paper">
+      <div class="logoLine"><img id="certLogo" alt="logo certificado"></div>
+      <h1>CERTIFICADO DE CONCLUSÃO</h1>
+      <p class="sub">Certificamos que</p>
+      <div class="line"></div>
+      <p class="sub"><b id="certStudent">________________________________________</b><br>(Nome do aluno)</p>
+      <p class="sub">concluiu com êxito o curso</p>
+      <p class="sub"><b id="certCourse">edyStude_Com_Foco</b></p>
+      <p class="sub" id="certSubtitle">Introdução ao Git e GitHub (do zero ao push)</p>
+      <p class="sub">Carga horária: <b id="certHours">2 horas</b> • Data: <b id="certDate"></b></p>
+      <p class="code">Código de validação: <span id="certCode"></span></p>
+      <div class="line"></div>
+      <p class="sub">Assinatura do instrutor</p>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ----------------- STATE + STORAGE -----------------
+  const KEY = "edyStude_Com_Foco_APP_v1";
+
+  const defaultState = () => ({
+    courseName: "edyStude_Com_Foco",
+    courseSubtitle: "Introdução ao Git e GitHub (do zero ao push)",
+    courseHours: "2 horas",
+    courseDate: new Date().toLocaleDateString("pt-BR"),
+    assets: {
+      logo: "",      // dataURL
+      terminal: "",  // dataURL
+      github: ""     // dataURL
+    },
+    exercises: [
+      {
+        title:"Ex 1 — Inicializar repositório",
+        prompt:"Crie uma pasta de projeto e inicialize um repositório Git.",
+        answer:"mkdir meu_projeto; cd meu_projeto; git init"
+      },
+      {
+        title:"Ex 2 — Primeiro commit",
+        prompt:"Crie um README.md e faça add + commit.",
+        answer:"echo \"Meu projeto\" > README.md; git add README.md; git commit -m \"Primeiro commit\""
+      },
+      {
+        title:"Ex 3 — Conectar origin",
+        prompt:"Conecte seu repositório local ao GitHub (origin) e garanta a branch main.",
+        answer:"git remote add origin <URL_DO_REPO>; git branch -M main"
+      },
+      {
+        title:"Ex 4 — Fazer push",
+        prompt:"Envie a branch main para o GitHub.",
+        answer:"git push -u origin main"
+      },
+      {
+        title:"Ex 5 — Interpretar mensagem",
+        prompt:"Explique com suas palavras: main -> main",
+        answer:"A branch main do repositório remoto foi atualizada com o que está na branch main local."
+      },
+      {
+        title:"Ex 6 — Delta compression",
+        prompt:"O que significa 'Delta compression using up to 8 threads'?",
+        answer:"Git compacta e envia diferenças (deltas) usando múltiplas threads para ficar mais rápido."
+      },
+      {
+        title:"Ex 7 — Intervalo de commits",
+        prompt:"O que significa: e4ed867..d89f219?",
+        answer:"O remoto estava em e4ed867 e foi atualizado até d89f219 (novo commit)."
+      },
+      {
+        title:"Ex 8 — Erro comum",
+        prompt:"Simule um erro: tente dar push sem origin configurado e diga como corrigir.",
+        answer:"Erro 'No configured push destination'. Corrigir: git remote add origin <URL> e depois git push."
+      },
+      {
+        title:"Ex 9 — Histórico",
+        prompt:"Use git log --oneline e copie os 3 últimos commits.",
+        answer:"Mostra hashes + mensagens em uma linha por commit."
+      },
+      {
+        title:"Ex 10 — Status",
+        prompt:"Use git status e descreva o que muda antes e depois de commit.",
+        answer:"Antes há mudanças staged/unstaged; após commit geralmente 'working tree clean'."
+      }
+    ]
+  });
+
+  const load = () => {
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return defaultState();
+      return Object.assign(defaultState(), JSON.parse(raw));
+    }catch{ return defaultState(); }
+  };
+
+  let state = load();
+
+  const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+
+  // ----------------- DOM -----------------
+  const $ = (id) => document.getElementById(id);
+  const view = $("view");
+
+  const setBrand = () => {
+    $("brandName").textContent = state.courseName;
+    $("courseName").value = state.courseName;
+    $("courseSubtitle").value = state.courseSubtitle;
+    $("courseHours").value = state.courseHours;
+    $("courseDate").value = state.courseDate;
+
+    // logo placeholders
+    const fallback = makeTextLogo(state.courseName);
+    const logoSrc = state.assets.logo || fallback;
+
+    $("brandLogo").src = logoSrc;
+    $("certLogo").src = logoSrc;
+
+    $("certCourse").textContent = state.courseName;
+    $("certSubtitle").textContent = state.courseSubtitle;
+    $("certHours").textContent = state.courseHours;
+    $("certDate").textContent = state.courseDate;
+    $("certCode").textContent = makeCode();
+  };
+
+  const makeCode = () => {
+    // deterministic-ish per day + name (so não muda toda hora)
+    const base = `${state.courseName}|${state.courseDate}|${state.courseHours}`;
+    let hash = 0;
+    for (let i=0;i<base.length;i++) hash = (hash*31 + base.charCodeAt(i)) >>> 0;
+    return ("0000000000" + hash.toString(16).toUpperCase()).slice(-10);
+  };
+
+  const makeTextLogo = (text) => {
+    // Gera um logo simples via canvas (dataURL) se não houver upload
+    const c = document.createElement("canvas");
+    c.width = 600; c.height = 180;
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#0D1B2A";
+    ctx.fillRect(0,0,c.width,c.height);
+
+    // ícone alvo
+    ctx.strokeStyle = "#4DA3FF";
+    ctx.lineWidth = 6;
+    const cx=80, cy=90;
+    [52,34,16].forEach(r=>{
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    });
+    ctx.fillStyle = "#4DA3FF";
+    ctx.beginPath(); ctx.arc(cx,cy,5,0,Math.PI*2); ctx.fill();
+
+    ctx.fillStyle = "#EAF2FF";
+    ctx.font = "700 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText(text, 150, 82);
+
+    ctx.fillStyle = "#4DA3FF";
+    ctx.font = "700 16px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+    ctx.fillText("DO ZERO AO PUSH", 150, 120);
+
+    return c.toDataURL("image/png");
+  };
+
+  const updateKPIs = () => {
+    $("kpiExercises").textContent = state.exercises.length;
+  };
+
+  // ----------------- RENDER -----------------
+  const render = (tab) => {
+    setBrand();
+    updateKPIs();
+
+    const termImg = state.assets.terminal || "";
+    const ghImg = state.assets.github || "";
+
+    const commonHeader = (title, desc) => `
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
+        <div>
+          <h2 style="margin:0;font-size:20px">${title}</h2>
+          <p style="margin:6px 0 0;color:var(--muted)">${desc}</p>
+        </div>
+        <span class="pill">${state.courseHours} • ${state.courseDate}</span>
+      </div>
+      <div class="hr"></div>
+    `;
+
+    const printsHTML = `
+      <div class="sectionTitle">
+        <h2 style="margin:0;font-size:16px">🖼️ Prints (Terminal + GitHub)</h2>
+        <span class="hint">Faça upload à esquerda para usar prints reais</span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="imgBox">
+          <b>Terminal</b><div class="meta">Exemplo/Real</div>
+          ${termImg ? `<img src="${termImg}" alt="terminal">` : `<div style="color:var(--muted);margin-top:8px">Nenhum print enviado.</div>`}
+        </div>
+        <div class="imgBox">
+          <b>GitHub</b><div class="meta">Exemplo/Real</div>
+          ${ghImg ? `<img src="${ghImg}" alt="github">` : `<div style="color:var(--muted);margin-top:8px">Nenhum print enviado.</div>`}
+        </div>
+      </div>
+      <div class="hr"></div>
+    `;
+
+    const exercisesHTML = (withAnswers) => `
+      <div class="sectionTitle">
+        <h2 style="margin:0;font-size:16px">🧠 Exercícios práticos</h2>
+        <span class="hint">${withAnswers ? "com gabarito" : "sem gabarito"}</span>
+      </div>
+      <div class="list">
+        ${state.exercises.map((e,idx)=>`
+          <div class="item">
+            <div class="itemHead">
+              <b>${idx+1}. ${escapeHTML(e.title)}</b>
+              <button class="noPrint" data-del="${idx}" title="Remover">🗑️</button>
+            </div>
+            <div class="meta">${escapeHTML(e.prompt)}</div>
+            ${withAnswers ? `<div class="ans"><small><b>Gabarito:</b> ${escapeHTML(e.answer)}</small></div>` : ``}
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    if(tab === "iniciante"){
+      view.innerHTML = `
+        ${commonHeader("📘 Iniciante Total", "Explicação simples, do zero até entender o push.")}
+        <div class="item">
+          <b>O que significa: git push origin main</b>
+          <div class="meta">
+            • <b>push</b> = enviar<br/>
+            • <b>origin</b> = repositório remoto (GitHub)<br/>
+            • <b>main</b> = branch principal<br/>
+            Resultado: seu projeto local foi enviado/atualizado no GitHub.
+          </div>
+        </div>
+        <div class="hr"></div>
+        ${printsHTML}
+        ${exercisesHTML(false)}
+      `;
+    }
+
+    if(tab === "tecnico"){
+      view.innerHTML = `
+        ${commonHeader("📗 Versão Técnica", "Explicação técnica do que o Git faz no push (objetos, deltas, refs).")}
+        <div class="item">
+          <b>Resumo técnico</b>
+          <div class="meta">
+            • Git envia apenas objetos que o remoto não possui.<br/>
+            • <b>Delta compression</b> envia diferenças para reduzir tamanho.<br/>
+            • <b>e4ed867..d89f219</b> é o intervalo atualizado (antigo → novo).<br/>
+            • <b>main -> main</b> atualiza o ponteiro da branch remota.
+          </div>
+        </div>
+        <div class="hr"></div>
+        ${printsHTML}
+        ${exercisesHTML(false)}
+      `;
+    }
+
+    if(tab === "professor"){
+      view.innerHTML = `
+        ${commonHeader("📕 Professor / Instrutor", "Plano de aula + exercícios com gabarito + formato para ensinar.")}
+        <div class="item">
+          <b>Plano de aula (sugestão 2h)</b>
+          <div class="meta">
+            10 min: Git x GitHub • 20 min: status/add/commit • 20 min: origin/main •
+            30 min: push + leitura da saída • 30 min: exercícios + correção • 10 min: quiz final
+          </div>
+        </div>
+        <div class="hr"></div>
+        ${printsHTML}
+        ${exercisesHTML(true)}
+      `;
+    }
+
+    if(tab === "online"){
+      view.innerHTML = `
+        ${commonHeader("🎥 Curso Online", "Estrutura pronta para gravar videoaulas curtas e objetivas.")}
+        <div class="item">
+          <b>Formato sugerido</b>
+          <div class="meta">
+            • Aula 1: O que é Git e por que usar (10 min)<br/>
+            • Aula 2: add + commit (12 min)<br/>
+            • Aula 3: GitHub + origin (10 min)<br/>
+            • Aula 4: git push + leitura da mensagem (10 min)<br/>
+            • Aula 5: erros comuns (8 min)<br/>
+            • Aula prática: desafio final (entregar link do repo)
+          </div>
+        </div>
+        <div class="hr"></div>
+        ${printsHTML}
+        ${exercisesHTML(false)}
+      `;
+    }
+
+    // delete handlers
+    view.querySelectorAll("button[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const idx = Number(btn.getAttribute("data-del"));
+        state.exercises.splice(idx,1);
+        save();
+        render(tab);
+      });
+    });
+  };
+
+  const escapeHTML = (s) =>
+    String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+
+  // ----------------- EVENTS -----------------
+  // Tabs
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.addEventListener("click", ()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      render(t.dataset.tab);
+    });
+  });
+
+  // Inputs
+  $("courseName").addEventListener("input", (e)=>{ state.courseName=e.target.value; save(); setBrand(); });
+  $("courseSubtitle").addEventListener("input",(e)=>{ state.courseSubtitle=e.target.value; save(); setBrand(); });
+  $("courseHours").addEventListener("input",(e)=>{ state.courseHours=e.target.value; save(); setBrand(); });
+  $("courseDate").addEventListener("input",(e)=>{ state.courseDate=e.target.value; save(); setBrand(); });
+
+  // Uploads -> dataURL
+  const toDataURL = (file) => new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+
+  $("logoUpload").addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    state.assets.logo = await toDataURL(f);
+    save(); setBrand();
+  });
+  $("termUpload").addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    state.assets.terminal = await toDataURL(f);
+    save(); render(activeTab());
+  });
+  $("ghUpload").addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    state.assets.github = await toDataURL(f);
+    save(); render(activeTab());
+  });
+
+  // Add exercise
+  $("btnAddEx").addEventListener("click", ()=>{
+    const title = $("exTitle").value.trim();
+    const prompt = $("exPrompt").value.trim();
+    const answer = $("exAnswer").value.trim();
+    if(!title || !prompt) return alert("Preencha pelo menos Título e Enunciado.");
+    state.exercises.push({title, prompt, answer});
+    $("exTitle").value=""; $("exPrompt").value=""; $("exAnswer").value="";
+    save(); render(activeTab());
+  });
+
+  // Print / PDF
+  $("btnPrint").addEventListener("click", ()=> window.print());
+
+  // Cert view (print)
+  $("btnCert").addEventListener("click", ()=>{
+    // rola até a seção de certificado e imprime
+    document.getElementById("certView").scrollIntoView({behavior:"smooth"});
+    setTimeout(()=>window.print(), 500);
+  });
+
+  // Export JSON
+  $("btnExport").addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${state.courseName}_backup.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // Import JSON
+  $("importJson").addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    const txt = await f.text();
+    try{
+      state = Object.assign(defaultState(), JSON.parse(txt));
+      save();
+      render(activeTab());
+    }catch{
+      alert("JSON inválido.");
+    }
+  });
+
+  // Reset
+  $("btnReset").addEventListener("click", ()=>{
+    if(!confirm("Apagar tudo e voltar ao padrão?")) return;
+    state = defaultState(); save(); render(activeTab());
+  });
+
+  const activeTab = () => document.querySelector(".tab.active")?.dataset.tab || "iniciante";
+
+  // init
+  setBrand();
+  updateKPIs();
+  render("iniciante");
+</script>
+
+<a href="index06.html">Next </a>
+</body>
+</html>
